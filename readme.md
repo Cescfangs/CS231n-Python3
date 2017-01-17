@@ -3,4 +3,4 @@
 
 ### Progress
 * Assignment 1:
-1. KNN ✔️
+  1. KNN ✔️
