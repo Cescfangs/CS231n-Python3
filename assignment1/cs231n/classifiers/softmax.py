@@ -73,12 +73,10 @@ def softmax_loss_vectorized(W, X, y, reg):
     score -= np.max(score, axis=1, keepdims=True)
     # p = np.zeros_like(score)
     p = np.exp(score) / np.sum(np.exp(score), axis=1, keepdims=True)
-    # li = np.zeros(X.shape, 1)
-    # li[:] = - np.sum()
     loss = - np.sum(np.log(p[np.arange(len(X)), y])) / len(X) + 0.5 * reg * np.sum(np.square(W))
-    y_id=np.zeros_like(p)
-    y_id[np.arange(len(X)), y]=1
-    dW=X.T.dot(p - y_id) / len(X) + reg * W
+    y_id = np.zeros_like(p)
+    y_id[np.arange(len(X)), y] = 1
+    dW = X.T.dot(p - y_id) / len(X) + reg * W
     #############################################################################
     #                          END OF YOUR CODE                                 #
     #############################################################################
