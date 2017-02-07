@@ -6,6 +6,7 @@
   1. KNN ✔️
   2. SVM ✔️
   3. Softmax ✔️
+  4. Neural Network  ✔️
 
 * Assignment 2:
 
