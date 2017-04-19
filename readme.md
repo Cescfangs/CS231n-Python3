@@ -10,4 +10,6 @@
 
 * Assignment 2:
 
+  1. Fully connected nets  ✔️
+
   ...
