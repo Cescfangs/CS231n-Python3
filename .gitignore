@@ -4,3 +4,6 @@
 *.bak
 
 *.pyc
+
+assignment1/.ipynb_checkpoints/*
+*.pdf
