@@ -10,6 +10,7 @@
 
 * Assignment 2:
 
-  1. Fully connected nets  ✔️
+  1. Fully connected nets
+  2. BatchNorm layers ✔️
 
   ...
