@@ -95,9 +95,10 @@ class TwoLayerNet(object):
         # classifier loss. So that your results match ours, multiply the            #
         # regularization loss by 0.5                                                #
         #############################################################################
-        exp_scores = np.exp(scores - scores.max(axis=1, keepdims=1))
+        exp_scores = np.exp(scores - scores.max(axis=1, keepdims=True))
         p = exp_scores / np.sum(exp_scores, axis=1, keepdims=True)
-        loss = -np.sum(np.log(p[np.arange(N), y])) / N + 0.5 * reg * (np.sum(np.square(W2)) + np.sum(np.square(W1)))
+        loss = -np.sum(np.log(p[np.arange(N), y])) / N + 0.5 * reg * \
+            (np.sum(np.square(W2)) + np.sum(np.square(W1)))
 
         #############################################################################
         #                              END OF YOUR CODE                             #
@@ -119,7 +120,8 @@ class TwoLayerNet(object):
 
         dLoss_dReLu = dLoss_dout2.dot(W2.T)  # [NxH]
         dReLu_dOut1 = np.zeros_like(out_1) + (out_1 > 0)  # [NxH]
-        dLoss_dOut1 = dReLu_dOut1 * dLoss_dReLu  # [NxH], a gete won't change shape, it's elementwise in fact
+        # [NxH], a gete won't change shape, it's elementwise in fact
+        dLoss_dOut1 = dReLu_dOut1 * dLoss_dReLu
 
         dOut_dW1 = X.T  # [DxN]
         dLoss_dW1 = dOut_dW1.dot(dLoss_dOut1)  # [DxH]

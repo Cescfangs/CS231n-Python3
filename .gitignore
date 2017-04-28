@@ -16,3 +16,5 @@ assignment2/cs231n/cifar-10-batches-py/data_batch_4
 assignment1/.ipynb_checkpoints/svm-checkpoint.ipynb
 
 assignment1/.ipynb_checkpoints/svm-checkpoint.ipynb
+
+*.jpg
