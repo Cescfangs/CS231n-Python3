@@ -184,8 +184,14 @@ class FullyConnectedNet(object):
         for i, dim in enumerate(dims):
             W = 'W' + str(i + 1)
             b = 'b' + str(i + 1)
+            if self.use_batchnorm and i < len(dims) - 1:
+                gamma = 'gamma' + str(i + 1)
+                beta = 'beta' + str(i + 1)
+                self.params[gamma] = np.ones(dim)
+                self.params[beta] = np.zeros(dim)
             self.params[W] = np.random.randn(pre_dim, dim) * weight_scale
             self.params[b] = np.zeros(dim)
+
             pre_dim = dim
         # print(self.params)
         ############################################################################
@@ -247,11 +253,21 @@ class FullyConnectedNet(object):
         hidden_layers = self.num_layers - 1
         x = X
         caches = []
+        dropout_caches = []
         for i in range(1, hidden_layers + 1):
             W = self.params['W' + str(i)]
             b = self.params['b' + str(i)]
-            x, cache = affine_relu_forward(x, W, b)
-            caches.append(cache)
+            if self.use_batchnorm:
+                # print(self.params['gamma' + str(i)].shape, b.shape, x.shape, W.shape)
+                x, cache = affine_relu_bn_forward(x, W, b, self.params['gamma' + str(i)],
+                                                self.params['beta' + str(i)], self.bn_params[i - 1])
+                caches.append(cache)
+            else:
+                x, cache = affine_relu_forward(x, W, b)
+                caches.append(cache)
+            if self.use_dropout:
+                x, dropout_cache = dropout_forward(x, self.dropout_param)
+                dropout_caches.append(dropout_cache)
         W = self.params['W' + str(i + 1)]
         b = self.params['b' + str(i + 1)]
         scores, cache_scores = affine_forward(x, W, b)
@@ -286,13 +302,25 @@ class FullyConnectedNet(object):
 
         while i > 0:
             cache = caches.pop()
-            dx, dw, db = affine_relu_backward(dx, cache)
+            if self.use_dropout:
+                dropout_cache = dropout_caches.pop()
+                dx = dropout_backward(dx, dropout_cache)
+            if self.use_batchnorm:
+                dx, dw, db, dgamma, dbeta = affine_relu_bn_backward(dx, cache)
+                gamma_key = 'gamma' + str(i)
+                beta_key = 'beta' + str(i)
+                grads[beta_key] = dbeta
+                grads[gamma_key] = dgamma
+            else:
+                dx, dw, db = affine_relu_backward(dx, cache)
             W_key = 'W' + str(i)
             b_key = 'b' + str(i)
             W = self.params[W_key]
+            # print(W.shape)
             dw += self.reg * W
             grads[W_key] = dw
             grads[b_key] = db
+
             i -= 1
             loss += 0.5 * self.reg * np.sum(np.square(W))
         ############################################################################
@@ -300,3 +328,4 @@ class FullyConnectedNet(object):
         ############################################################################
 
         return loss, grads
+
