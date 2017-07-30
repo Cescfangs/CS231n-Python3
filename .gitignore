@@ -7,6 +7,7 @@
 
 assignment1/.ipynb_checkpoints/*
 assignment2/.ipynb_checkpoints/*
+assignment3/.ipynb_checkpoints/*
 *.pdf
 
 assignment2/cs231n/cifar-10-batches-py/data_batch_4
