@@ -6,12 +6,16 @@
   1. KNN ✔️
   2. SVM ✔️
   3. Softmax ✔️
-  4. Neural Network  ✔️
+  4. Neural network  ✔️
 
 * Assignment 2:
 
   1. Fully connected nets ✔️
   2. BatchNorm layers ✔️
   3. Dropout ✔️
+  4. ConvNet on CIFAR-10 ✔️
+
+* Assignment 3:
+  1. Image Captioning with Vanilla RNNs ✔️
 
   ...
