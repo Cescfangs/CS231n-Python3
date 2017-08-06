@@ -17,5 +17,7 @@
 
 * Assignment 3:
   1. Image Captioning with Vanilla RNNs ✔️
+  2. Image Captioning with LSTMs ✔️
+  3. Network Visualization: Saliency maps, Class Visualization, and Fooling Images ✔️
 
   ...
