@@ -134,16 +134,32 @@ class CaptioningRNN(object):
         # defined above to store loss and gradients; grads[k] should give the      #
         # gradients for self.params[k].                                            #
         ############################################################################
+        # step 1, transform image features into initial hidden state
         h0, cache_affine = affine_forward(features, W_proj, b_proj)  # (N, H)
+
+        # step 2, transform word index(1) to word vectors(D)
         x, cache_embed = word_embedding_forward(captions_in, W_embed)
+
+        # step 3, RNN forward
         if self.cell_type == 'rnn':
             h, cache_rnn = rnn_forward(x, h0, Wx, Wh, b)
+        elif self.cell_type == 'lstm':
+            h, cache_lstm = lstm_forward(x, h0, Wx, Wh, b)
+
+        # step 4, transform hidden state into one-hot encode prediction
         h_out, temporal_affine_cache = temporal_affine_forward(h, W_vocab, b_vocab)
+
+        # step5, compute loss and grads
         loss, dh_out = temporal_softmax_loss(h_out, captions_out, mask)
+
+        # finally, RNN backward
         dh, grads['W_vocab'], grads['b_vocab'] = temporal_affine_backward(
             dh_out, temporal_affine_cache)
         if self.cell_type == 'rnn':
             dx, dh0, grads['Wx'], grads['Wh'], grads['b'] = rnn_backward(dh, cache_rnn)
+        elif self.cell_type == 'lstm':
+            dx, dh0, grads['Wx'], grads['Wh'], grads['b'] = lstm_backward(dh, cache_lstm)
+
         grads['W_embed'] = word_embedding_backward(dx, cache_embed)
         dfeatures, grads['W_proj'], grads['b_proj'] = affine_backward(dh0, cache_affine)
 
@@ -207,12 +223,29 @@ class CaptioningRNN(object):
         # functions; you'll need to call rnn_step_forward or lstm_step_forward in #
         # a loop.                                                                 #
         ###########################################################################
+        # step 1, transform image features into initial hidden state
         h0, cache_affine = affine_forward(features, W_proj, b_proj)  # (N, H)
-        x, cache_embed = word_embedding_forward(captions, W_embed)
-        if self.cell_type == 'rnn':
-            h, cache_rnn = rnn_forward(x, h0, Wx, Wh, b)
-        h_out, temporal_affine_cache = temporal_affine_forward(h, W_vocab, b_vocab)
-        captions = h_out.argmax(axis=2)
+        # x, cache_embed = word_embedding_forward(captions, W_embed)   # (N, D)
+
+        # step 2, RNN step forward(we don't use rnn_forward or lstm_forward because
+        # these functions were made for training, ie, we have no captions_in while
+        # generating caption_out here)
+        prev_h = h0
+        prev_word_idx = [self._start] * N
+        prev_c = np.zeros_like(prev_h)
+        captions[:, 0] = self._start
+        for t in range(max_length):
+            x = W_embed[prev_word_idx]
+            if self.cell_type == 'rnn':
+                next_h, _ = rnn_step_forward(x, prev_h, Wx, Wh, b)
+            elif self.cell_type == 'lstm':
+                next_h, next_c, _ = lstm_step_forward(x, prev_h, prev_c, Wx, Wh, b)
+                prev_c = next_c
+            h_out, _ = affine_forward(next_h, W_vocab, b_vocab)  # (N, V)
+            prev_word_idx = h_out.argmax(axis=1)
+            captions[:, t] = prev_word_idx
+            prev_h = next_h
+
         ############################################################################
         #                             END OF YOUR CODE                             #
         ############################################################################
