@@ -1,6 +1,8 @@
 # CS231n Assignments: a Python 3 repo
 [CS231n](http://cs231n.stanford.edu/index.html) is awesome, the original code of assignments is based on `Python 2`, I'm a fan of `Python 3` though, for those who prefer 3 to 2, feel free to clone or fork this repo, have fun with it!
 
+All Done 🎉🎉🎉
+
 ### Progress
 * Assignment 1:
   1. KNN ✔️
@@ -19,5 +21,6 @@
   1. Image Captioning with Vanilla RNNs ✔️
   2. Image Captioning with LSTMs ✔️
   3. Network Visualization: Saliency maps, Class Visualization, and Fooling Images ✔️
+  4. Image Generation ✔️
 
   ...
